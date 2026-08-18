@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepShield - Forensic Audit History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-card: rgba(18, 26, 44, 0.85);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-violet: #8b5cf6;
+            --status-real: #10b981;
+            --status-ai: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.12) 0%, transparent 45%);
+        }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem;
+            border-bottom: 1px solid var(--border-card); backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.75rem; font-size: 1.4rem; font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;
+        }
+
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+
+        .container { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; width: 100%; }
+
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-card); backdrop-filter: blur(16px);
+            border-radius: 20px; padding: 2.5rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .title { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; }
+
+        .btn-action {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600;
+            text-decoration: none; transition: transform 0.2s; border: none; cursor: pointer;
+        }
+        .btn-action:hover { transform: translateY(-2px); }
+
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .btn-clear:hover { background: rgba(239, 68, 68, 0.3); }
+
+        .search-bar {
+            width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-card);
+            border-radius: 10px; padding: 0.8rem 1.25rem; color: white; font-size: 0.95rem; margin-bottom: 1.5rem;
+        }
+
+        .history-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-card); }
+        .history-table th, .history-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 0.95rem; }
+        .history-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); font-weight: 600; }
+
+        .badge-ai { display: inline-flex; align-items: center; padding: 0.3rem 0.8rem; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50px; font-weight: 700; font-size: 0.85rem; }
+        .badge-real { display: inline-flex; align-items: center; padding: 0.3rem 0.8rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 50px; font-weight: 700; font-size: 0.85rem; }
+
+        footer { margin-top: auto; padding: 2rem; text-align: center; border-top: 1px solid var(--border-card); color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            DeepShield
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/upload">Scan Image</a>
+            <a href="/history-page" class="active">History</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="header-flex">
+                <div class="title">
+                    <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Forensic Audit History
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <a href="/export-csv" class="btn-action">Export CSV</a>
+                    <form action="/clear-history" method="POST" onsubmit="return confirm('Are you sure you want to clear all scan history?')">
+                        <button type="submit" class="btn-clear">Clear History</button>
+                    </form>
+                </div>
+            </div>
+
+            <input type="text" id="search" placeholder="Search history by filename or result..." class="search-bar" onkeyup="filterHistory()">
+
+            {% if scans %}
+            <table class="history-table" id="history-table">
+                <thead>
+                    <tr>
+                        <th>Scan ID</th>
+                        <th>Filename</th>
+                        <th>Classification</th>
+                        <th>Confidence</th>
+                        <th>ELA Std Dev</th>
+                        <th>FFT Frequency</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                    <tr>
+                        <td style="color:var(--text-muted);">#{{ scan.id }}</td>
+                        <td style="font-weight: 600; color:white;">{{ scan.filename }}</td>
+                        <td>
+                            {% if scan.is_ai %}
+                                <span class="badge-ai">AI Synthetic</span>
+                            {% else %}
+                                <span class="badge-real">Authentic Real</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-weight:700; color:var(--accent-cyan);">{{ scan.confidence }}</td>
+                        <td>{{ scan.ela_std_dev }}</td>
+                        <td>{{ scan.fft_high_freq }}</td>
+                        <td style="color:var(--text-muted); font-size:0.85rem;">{{ scan.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div style="text-align:center; padding:3rem 0; color:var(--text-muted);">
+                    No forensic audit logs found in the database.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 DeepShield AI. Forensic Detection Platform.
+    </footer>
+
+    <script>
+        function filterHistory() {
+            const input = document.getElementById('search').value.toLowerCase();
+            const rows = document.querySelectorAll('#history-table tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
