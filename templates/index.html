@@ -137,10 +137,22 @@
             DeepShield
         </a>
         <div class="nav-links">
-            <a href="/" class="active">Home</a>
-            <a href="/upload">Scan Image</a>
-            <a href="/batch-upload">Batch Upload</a>
-            <a href="/history-page">History</a>
+            {% if current_user %}
+                <a href="/" class="active">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/upload">Analyze</a>
+                <a href="/history-page">History</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout</a>
+                <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">
+                    Welcome, {{ current_user.name }}
+                </div>
+            {% else %}
+                <a href="/" class="active">Home</a>
+                <a href="/about">About</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {% endif %}
         </div>
     </nav>
 

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepShield - User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-card: rgba(18, 26, 44, 0.8);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-violet: #8b5cf6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.12) 0%, transparent 45%);
+        }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem;
+            border-bottom: 1px solid var(--border-card); backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.75rem; font-size: 1.4rem; font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+
+        .container {
+            max-width: 900px; margin: 3rem auto; padding: 0 2rem; width: 100%;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #6ee7b7; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1.5rem;
+        }
+
+        .profile-header-card {
+            background: var(--bg-card); border: 1px solid var(--border-card); backdrop-filter: blur(16px);
+            border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .avatar-circle {
+            width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 800; color: white; box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .profile-info h2 { font-size: 1.8rem; font-weight: 800; color: white; }
+        .profile-info p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+
+        .details-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-card); border-radius: 12px; padding: 1rem;
+        }
+
+        .detail-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .detail-value { font-size: 1rem; font-weight: 700; color: white; margin-top: 0.35rem; }
+
+        .card-section {
+            background: var(--bg-card); border: 1px solid var(--border-card); backdrop-filter: blur(16px);
+            border-radius: 20px; padding: 2rem; margin-bottom: 2rem;
+        }
+
+        .section-title { font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-card); padding-bottom: 0.75rem; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; }
+
+        .form-input {
+            width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-card);
+            border-radius: 10px; padding: 0.8rem 1rem; color: white; font-size: 0.95rem; outline: none; transition: all 0.2s;
+        }
+
+        .form-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 12px rgba(6, 182, 212, 0.25); }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: white; border: none; padding: 0.8rem 1.5rem; font-size: 0.95rem; font-weight: 700;
+            border-radius: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45); }
+
+        footer { margin-top: auto; padding: 2rem; text-align: center; border-top: 1px solid var(--border-card); color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/dashboard" class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            DeepShield
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/upload">Analyze</a>
+            <a href="/history-page">History</a>
+            <a href="/profile" class="active">Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if error %}
+        <div class="alert-error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert-success">{{ success }}</div>
+        {% endif %}
+
+        <div class="profile-header-card">
+            <div class="avatar-circle">
+                {{ user.name[0] | upper }}
+            </div>
+            <div class="profile-info" style="flex:1;">
+                <h2>{{ user.name }}</h2>
+                <p>{{ user.email }}</p>
+
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Account Created</div>
+                        <div class="detail-value">{{ user.created_at }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Last Login</div>
+                        <div class="detail-value">{{ user.last_login if user.last_login else 'Current Session' }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total Analyses</div>
+                        <div class="detail-value">{{ stats.total_analyses }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Edit Profile -->
+        <div class="card-section">
+            <h3 class="section-title">Update Personal Information</h3>
+            <form action="/profile" method="POST">
+                <input type="hidden" name="action" value="update_profile">
+                <div class="form-group">
+                    <label class="form-label" for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-input" value="{{ user.name }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address (Read-only)</label>
+                    <input type="email" class="form-input" value="{{ user.email }}" disabled style="opacity:0.6; cursor:not-allowed;">
+                </div>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Section 2: Change Password -->
+        <div class="card-section">
+            <h3 class="section-title">Change Account Password</h3>
+            <form action="/profile" method="POST">
+                <input type="hidden" name="action" value="change_password">
+                <div class="form-group">
+                    <label class="form-label" for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" class="form-input" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-input" required minlength="8" placeholder="At least 8 characters">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirm_new_password">Confirm New Password</label>
+                    <input type="password" id="confirm_new_password" name="confirm_new_password" class="form-input" required placeholder="Repeat new password">
+                </div>
+                <button type="submit" class="btn-submit">Update Password</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 DeepShield AI. Production Neural Forensic System.
+    </footer>
+</body>
+</html>

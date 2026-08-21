@@ -1,0 +1,72 @@
+{
+    "investigation_timestamp": "2026-08-19 06:20:40 UTC",
+    "model_evaluated": {
+        "repo": "umm-maybe/AI-image-detector",
+        "class_name": "SwinForImageClassification",
+        "model_type": "swin",
+        "total_parameters": 86745274,
+        "id2label": {
+            "0": "artificial",
+            "1": "human"
+        }
+    },
+    "dataset_size": {
+        "real": 100,
+        "ai": 100
+    },
+    "baseline_efficientnet_b0": {
+        "accuracy": 0.7,
+        "precision": 1.0,
+        "recall": 0.4,
+        "f1_score": 0.5714,
+        "roc_auc": 0.702,
+        "avg_inference_time_ms": 80.75,
+        "confusion_matrix": [
+            [
+                100,
+                0
+            ],
+            [
+                60,
+                40
+            ]
+        ]
+    },
+    "pretrained_hf_model_thresh_05": {
+        "threshold": 0.5,
+        "accuracy": 0.925,
+        "precision": 0.8696,
+        "recall": 1.0,
+        "f1_score": 0.9302,
+        "roc_auc": 1.0,
+        "avg_inference_time_ms": 440.58,
+        "confusion_matrix": [
+            [
+                85,
+                15
+            ],
+            [
+                0,
+                100
+            ]
+        ]
+    },
+    "pretrained_hf_model_calibrated_thresh": {
+        "optimal_threshold": 0.6757,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "confusion_matrix": [
+            [
+                100,
+                0
+            ],
+            [
+                0,
+                100
+            ]
+        ]
+    }
+}

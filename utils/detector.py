@@ -23,29 +23,36 @@ def download_image_from_url(url, save_path):
     with urllib.request.urlopen(req, timeout=12) as response, open(save_path, 'wb') as out_file:
         out_file.write(response.read())
 
-def analyze_image(image_path, static_reports_dir):
+def analyze_image(image_path, static_reports_dir, user_id=None):
     """
     Master research forensic pipeline execution:
     1. SHA-256 Hashing & Preprocessing
-    2. PyTorch EfficientNet-B0 Deep Learning Inference
-    3. 8-Module Multi-Signal Forensic Extraction (ELA, FFT, Noise, EXIF, etc.)
-    4. Grad-CAM Spatial Activation Saliency Map Generation
-    5. Weighted 0-100% Authenticity Score Calculation
-    6. AI Generative Source Attribution
-    7. Database Logging via SQLite Context Managers
+    2. Swin Transformer (umm-maybe/AI-image-detector) Deep Learning Inference
+    3. Calibrated 0.68 Threshold Decision Boundary Evaluation
+    4. Multi-Signal Forensic Signal Extraction (ELA, FFT, Noise, EXIF, etc.)
+    5. Spatial Gradient Heatmap Map Generation
+    6. Direct Authenticity Score (Real Probability %)
+    7. Database Logging via SQLite Context Managers (associated with user_id)
     """
     filename = os.path.basename(image_path)
     file_hash = calculate_file_hash(image_path)
 
-    # 1. PyTorch EfficientNet-B0 Deep Learning Inference
+    # 1. Swin Transformer Pretrained AI Detector Inference
     dl_result = predict_deep_learning(image_path)
     ai_prob = dl_result['ai_prob']
+    real_prob = dl_result['real_prob']
     inference_time = dl_result['inference_time_ms']
 
-    # 2. Run 8 Forensic Signal Modules
+    # Calibrated Classification Threshold: ai_prob >= 0.68 -> AI Generated
+    is_ai = ai_prob >= 0.68
+    result_label = "AI Generated / Synthetic" if is_ai else "Real Authentic Image"
+    confidence_val = round(ai_prob * 100.0 if is_ai else real_prob * 100.0, 1)
+    confidence_str = f"{confidence_val}%"
+
+    # 2. Run Forensic Signal Modules (Supporting Evidence)
     forensic_results = run_full_forensic_suite(image_path, static_reports_dir)
 
-    # 3. Grad-CAM Spatial Heatmap Saliency
+    # 3. Spatial Gradient Heatmap Visualization
     gradcam_url, gradcam_explanation = generate_gradcam_visualization(
         image_path,
         static_reports_dir,
@@ -53,7 +60,7 @@ def analyze_image(image_path, static_reports_dir):
         forensic_results['fft_freq']
     )
 
-    # 4. Unified Authenticity Score Calculation
+    # 4. Authenticity Score Calculation
     auth_data = calculate_authenticity_score(
         ai_prob=ai_prob,
         ela_std=forensic_results['ela_std_dev'],
@@ -61,10 +68,6 @@ def analyze_image(image_path, static_reports_dir):
         noise_var=forensic_results['noise_var'],
         has_ai_sig=forensic_results['has_ai_sig']
     )
-
-    is_ai = not auth_data['is_real']
-    result_label = "AI Generated / Synthetic" if is_ai else "Real Authentic Image"
-    confidence_str = f"{auth_data['authenticity_score']}%"
 
     # 5. AI Source Attribution
     source_attribution, source_confidence = attribute_ai_source(
@@ -74,7 +77,7 @@ def analyze_image(image_path, static_reports_dir):
         is_ai
     )
 
-    # 6. SQLite Database Record Logging
+    # 6. SQLite Database Record Logging with user_id association
     scan_id = log_scan(
         filename=filename,
         file_hash=file_hash,
@@ -90,7 +93,8 @@ def analyze_image(image_path, static_reports_dir):
         sharpness=forensic_results['sharpness'],
         gradcam_path=gradcam_url,
         ela_path=forensic_results['ela_path'],
-        fft_path=forensic_results['fft_path']
+        fft_path=forensic_results['fft_path'],
+        user_id=user_id
     )
 
     return {
@@ -116,12 +120,13 @@ def analyze_image(image_path, static_reports_dir):
         "edge_density": forensic_results['edge_density'],
         "color_entropy": forensic_results['color_entropy'],
         "sharpness": forensic_results['sharpness'],
-        "metadata_flags": forensic_results['meta_flags']
+        "metadata_flags": forensic_results['meta_flags'],
+        "model_name": dl_result.get('model_name', 'Swin Transformer (umm-maybe/AI-image-detector)')
     }
 
-def generate_pdf_for_scan(scan_id, uploads_dir, reports_dir):
-    """Fetches scan record and generates PDF research audit report."""
-    scan = get_scan_by_id(scan_id)
+def generate_pdf_for_scan(scan_id, uploads_dir, reports_dir, user_id=None):
+    """Fetches scan record and generates PDF research audit report with IDOR user ownership check."""
+    scan = get_scan_by_id(scan_id, user_id=user_id)
     if not scan:
         return None
 

@@ -20,9 +20,8 @@ def safe_float(val, default=0.0):
 
 def build_pdf_report(scan_data, output_path):
     """
-    Phase 8 & Safety Audit: Defensive PDF Forensic Report Generation.
-    Prevents NameError, AttributeError, KeyError, FileNotFoundError, and TypeError.
-    Gracefully skips missing visuals or signals without failing document generation.
+    Defensive PDF Forensic Report Generation.
+    Displays Swin Transformer classification, 0.68 threshold, and supporting multi-signal evidence.
     """
     if not scan_data or not isinstance(scan_data, dict):
         scan_data = {}
@@ -35,12 +34,12 @@ def build_pdf_report(scan_data, output_path):
     c.rect(0, height - 85, width, 85, fill=1, stroke=0)
 
     c.setFillColor(colors.HexColor('#06b6d4'))
-    c.setFont("Helvetica-Bold", 22)
+    c.setFont("Helvetica-Bold", 20)
     c.drawString(40, height - 42, "DEEPSHIELD AI FORENSIC RESEARCH REPORT")
 
     c.setFillColor(colors.HexColor('#9ca3af'))
     c.setFont("Helvetica", 9)
-    c.drawString(40, height - 60, "EfficientNet-B0 Deep Learning & Multi-Signal Forensic Analysis Suite")
+    c.drawString(40, height - 60, "Swin Transformer Pretrained AI Detector (umm-maybe/AI-image-detector)")
 
     # 2. Metadata Box
     y = height - 120
@@ -59,7 +58,7 @@ def build_pdf_report(scan_data, output_path):
     if len(file_hash) > 16:
         file_hash = file_hash[:16] + "..."
         
-    inf_time = safe_str(scan_data.get('inference_time_ms'), "42.5")
+    inf_time = safe_str(scan_data.get('inference_time_ms'), "440.0")
 
     c.setFont("Helvetica", 9)
     c.setFillColor(colors.HexColor('#374151'))
@@ -72,7 +71,7 @@ def build_pdf_report(scan_data, output_path):
     result_text = safe_str(scan_data.get('result'), "N/A").upper()
     confidence_text = safe_str(scan_data.get('confidence'), "N/A")
     auth_score_text = safe_str(scan_data.get('authenticity_score'), "N/A")
-    source_attr_text = safe_str(scan_data.get('source_attribution'), "Unknown Source")
+    source_attr_text = safe_str(scan_data.get('source_attribution'), "Not Determined")
 
     verdict_bg = colors.HexColor('#ef4444') if is_ai else colors.HexColor('#10b981')
     c.setFillColor(verdict_bg)
@@ -82,10 +81,10 @@ def build_pdf_report(scan_data, output_path):
     c.setFont("Helvetica-Bold", 12)
     c.drawString(55, y - 20, f"VERDICT: {result_text}")
     c.setFont("Helvetica-Bold", 10)
-    c.drawString(55, y - 36, f"AUTHENTICITY SCORE: {auth_score_text}%  |  CONFIDENCE: {confidence_text}")
+    c.drawString(55, y - 36, f"AUTHENTICITY SCORE: {auth_score_text}%  |  CONFIDENCE: {confidence_text} (Threshold: 0.68)")
     c.drawString(55, y - 48, f"ESTIMATED GENERATOR SOURCE: {source_attr_text}")
 
-    # 4. Visual Inspection Grid (Original, Grad-CAM, ELA, FFT)
+    # 4. Visual Inspection Grid
     y -= 75
     c.setFillColor(colors.HexColor('#111827'))
     c.setFont("Helvetica-Bold", 11)
@@ -106,16 +105,16 @@ def build_pdf_report(scan_data, output_path):
         except Exception as e:
             print("PDF Image Draw Error (Original):", e)
 
-    # Grad-CAM Heatmap
+    # Spatial Gradient Heatmap
     gradcam_path = scan_data.get('abs_gradcam_path')
     if gradcam_path and isinstance(gradcam_path, str) and os.path.exists(gradcam_path):
         try:
             c.drawImage(gradcam_path, 220, y, width=box_w, height=box_h, preserveAspectRatio=True)
             c.setFont("Helvetica-Bold", 8)
             c.setFillColor(colors.HexColor('#111827'))
-            c.drawString(220, y - 10, "Grad-CAM Saliency Overlay")
+            c.drawString(220, y - 10, "Spatial Gradient Heatmap")
         except Exception as e:
-            print("PDF Image Draw Error (Grad-CAM):", e)
+            print("PDF Image Draw Error (Heatmap):", e)
 
     # ELA Heatmap
     ela_path = scan_data.get('abs_ela_path')
@@ -132,7 +131,7 @@ def build_pdf_report(scan_data, output_path):
     y -= 30
     c.setFillColor(colors.HexColor('#111827'))
     c.setFont("Helvetica-Bold", 10.5)
-    c.drawString(40, y, "MULTI-SIGNAL FORENSIC METRICS TABLE")
+    c.drawString(40, y, "SUPPORTING FORENSIC EVIDENCE TABLE")
 
     y -= 15
     ela_std = safe_float(scan_data.get('ela_std_dev'), 0.0)
@@ -142,7 +141,7 @@ def build_pdf_report(scan_data, output_path):
 
     table_headers = ["Forensic Module Signal", "Measured Metric Value", "Diagnostic Benchmark Standard"]
     table_rows = [
-        ["EfficientNet-B0 Deep Learning", f"AI Prob: {round(float(safe_float(scan_data.get('authenticity_score'), 50.0))/100, 2)}", "Softmax Decision Boundary: 0.50"],
+        ["Swin Transformer Pretrained AI Detector", f"Confidence: {confidence_text}", "Calibrated Decision Threshold: 0.68"],
         ["Error Level Analysis (ELA)", f"Std Dev: {ela_std}", "Standard Range: 10.0 - 32.0"],
         ["Fourier Spectrum (FFT)", f"High-Freq: {fft_freq}", "GAN Grid Noise Threshold: >210.0"],
         ["Laplacian Noise Floor", f"Variance: {noise_var}", "Sensor Noise >80.0"],
@@ -178,13 +177,13 @@ def build_pdf_report(scan_data, output_path):
     c.setFont("Helvetica", 8)
 
     rec_text = "AUTHENTIC MEDIA: Image demonstrates standard camera sensor characteristics." if not is_ai else \
-               f"AI SYNTHETIC MEDIA: High probability of synthetic generation. Probable source: {source_attr_text}."
+               f"AI SYNTHETIC MEDIA: High probability of synthetic generation. Attributed source: {source_attr_text}."
     c.drawString(50, y - 28, rec_text)
 
     # 7. Footer
     c.setFont("Helvetica-Oblique", 8)
     c.setFillColor(colors.HexColor('#9ca3af'))
-    c.drawString(40, 25, "DeepShield Research Forensic System | Confidential Report | EfficientNet-B0 + ReportLab")
+    c.drawString(40, 25, "DeepShield Research Forensic System | Confidential Audit | Swin Transformer + ReportLab")
 
     c.save()
     return output_path
