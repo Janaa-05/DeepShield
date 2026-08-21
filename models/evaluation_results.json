@@ -6,12 +6,12 @@
     "recall": 1.0,
     "f1_score": 0.6897,
     "roc_auc": 0.94,
-    "avg_inference_time_ms": 701.58,
+    "avg_inference_time_ms": 939.74,
     "confusion_matrix": {
         "true_positive_ai": 10,
         "false_negative_real": 0,
         "false_positive_ai": 9,
         "true_negative_real": 1
     },
-    "evaluation_timestamp": "2026-08-19 06:14:13 UTC"
+    "evaluation_timestamp": "2026-08-21 09:52:06 UTC"
 }

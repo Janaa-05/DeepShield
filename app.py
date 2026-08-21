@@ -5,7 +5,7 @@ import io
 import re
 from datetime import datetime
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, send_file, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, send_file, send_from_directory, session
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
@@ -43,6 +43,11 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'bmp'}
+
+@app.route('/favicon.ico')
+def favicon():
+    """Serve root favicon directly for standard browser queries."""
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 # Initialize SQLite Database and Migrate Schema Safely
 init_db()
